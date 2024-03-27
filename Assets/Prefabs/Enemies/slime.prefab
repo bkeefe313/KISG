@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3590984147678176828}
   - component: {fileID: 3761926068703923559}
   - component: {fileID: 7512253942768264026}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: slime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4901,6 +4901,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
       propertyPath: m_Name
       value: slime
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164078558771037576, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

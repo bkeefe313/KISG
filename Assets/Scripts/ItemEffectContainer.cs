@@ -16,4 +16,5 @@ public class ItemEffectContainer : MonoBehaviour
     public int money;
     public float handbrakeMultiplier;
     public float knockback;
+    public GameObject runnable;
 }

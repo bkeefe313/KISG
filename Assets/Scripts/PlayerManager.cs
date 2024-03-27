@@ -6,9 +6,9 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     // ITEM CONSTANTS
-    int NUM_COMMON_ITEMS = 5;
-    int NUM_RARE_ITEMS = 5;
-    int NUM_LEGENDARY_ITEMS = 5;
+    int num_common_items;
+    int num_rare_items;
+    int num_legendary_items;
     // STATS
     public Stats baseStats;
     public Stats realStats;
@@ -46,8 +46,18 @@ public class PlayerManager : MonoBehaviour
         uimanager = GameObject.Find("Game Manager").GetComponent<UIManager>();
         Controller = GetComponent<CharacterController>();
 
+        num_common_items = 0;
+        num_rare_items = 0;
+        num_legendary_items = 0;
         foreach (Item item in inventory) {
             item.count = 0;
+            if (item.rarity == 0) {
+                num_common_items++;
+            } else if (item.rarity == 1) {
+                num_rare_items++;
+            } else if (item.rarity == 2) {
+                num_legendary_items++;
+            }
         }
 
         baseStats = new Stats();
@@ -66,13 +76,33 @@ public class PlayerManager : MonoBehaviour
         Attack();
         Handbrake();
         DoMovement();
+        Cheats();
+    }
+
+    void Cheats() {
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+            GetCommonItem();
+        if(Input.GetKeyDown(KeyCode.Alpha2))
+            GetRareItem();
+        if(Input.GetKeyDown(KeyCode.Alpha3))
+            GetLegendaryItem();
     }
 
     void ApplyMovement() {
-        if (Velocity.magnitude > realStats.speed)
-            Velocity = Vector3.ClampMagnitude(Velocity, realStats.speed);
-        Velocity += Acceleration;
+        Vector3 xzVelocity = new Vector3(Velocity.x, 0, Velocity.z);
+        if (xzVelocity.magnitude > realStats.speed)
+            Velocity += Acceleration / Mathf.Pow((xzVelocity.magnitude / realStats.speed),2);
+        else
+            Velocity += Acceleration;
+
+        if(!handbraking) {
+            // rotate velocity vector with rotation
+            Vector3 xzVel = new Vector3(Velocity.x, 0, Velocity.z);
+            Vector3 xzRot = Quaternion.Euler(0, Rotation*Time.deltaTime, 0) * xzVel;
+            Velocity = new Vector3(xzRot.x, Velocity.y, xzRot.z);
+        }
         Controller.Move(Velocity*Time.deltaTime);
+
         transform.Rotate(0, Rotation*(handbraking ? realStats.handbrakeMultiplier : 1)*Time.deltaTime, 0);
     }
 
@@ -80,27 +110,29 @@ public class PlayerManager : MonoBehaviour
         Vector3 dir = transform.forward;
 
         // handbrake keeps direction of movement constant while turning
-        if (!handbraking)
+        if (!handbraking || Velocity.magnitude < 0.1f) {
             hbForward = transform.forward;
-        else 
-            dir = hbForward;
+        } else {
+            // increment dir from transform.forward to hbForward
+            dir = Vector3.RotateTowards(dir, hbForward, 0.01f, 0);
+        }
 
-        if(!handbraking) {
-            if(Input.GetKey(KeyCode.W))
-            {   
-                Acceleration = dir * realStats.speedMultiplier;
-            } else if(Input.GetKey(KeyCode.S))
-            {
-                Acceleration = -dir * realStats.speedMultiplier;
-            } else
-            {
-                Vector3 xzMovement = new Vector3(Velocity.x, 0, Velocity.z);
-                if (Mathf.Abs(Velocity.magnitude) < realStats.speedMultiplier*2) {
-                    Velocity = new Vector3(0, Velocity.y, 0);
-                } else {
-                    // "friction"
-                    Acceleration = -Vector3.Normalize(xzMovement) * realStats.speedMultiplier;
-                }
+        if(Input.GetKey(KeyCode.W) && !handbraking)
+        {   
+            Acceleration = transform.forward * realStats.speedMultiplier;
+        } else if(Input.GetKey(KeyCode.S) && !handbraking)
+        {
+            Acceleration = -transform.forward * realStats.speedMultiplier;
+        } else
+        {
+            Vector3 xzMovement = new Vector3(Velocity.x, 0, Velocity.z);
+            if (Mathf.Abs(Velocity.magnitude) < realStats.speedMultiplier*2) {
+                Velocity = new Vector3(0, Velocity.y, 0);
+            } else if (!handbraking){
+                // "friction"
+                Acceleration = -xzMovement / 10f;
+            } else {
+                Acceleration = -xzMovement / (10f * realStats.handbrakeMultiplier);
             }
         }
 
@@ -122,13 +154,13 @@ public class PlayerManager : MonoBehaviour
         // jump
         if (grounded) {
             if(Input.GetKey(KeyCode.Space))
-                Velocity.y += realStats.jumpForce;
+                Velocity.y = realStats.jumpForce;
             else
                 Velocity.y = 0;
         }
 
         // Visibly tilt cart with speed and turning amount
-        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, Rotation * Velocity.magnitude * (RotationSpeed/100000));
+        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, Rotation * Velocity.magnitude * (Mathf.Sqrt(RotationSpeed)/10000));
     }
 
     void DoGravity() {
@@ -184,11 +216,15 @@ public class PlayerManager : MonoBehaviour
         Time.timeScale = 0.05f;
         timeSinceFreeze = 0;
 
+        float damage = realStats.baseDamage * realStats.attackMultiplier * (Velocity.magnitude / realStats.speed);
+
         // Damage Particle Effect
         GameObject fx = Instantiate(hitFX, weapon.transform.position, Quaternion.identity);
+        // scale fx by damage 
+        fx.transform.localScale = new Vector3(1, 1, 1) * damage/50;
         Destroy(fx, 1.0f);
 
-        return realStats.baseDamage * realStats.attackMultiplier * (Velocity.magnitude / realStats.speed);
+        return damage;
     }
 
     void UpdateStats() {
@@ -197,29 +233,28 @@ public class PlayerManager : MonoBehaviour
         // apply item effects
         foreach (Item item in inventory) {
             for(int i = item.count; i > 0; i--) {
-                Debug.Log("Applying item: " + item.itemname);
-                Debug.Log("to player: " + this);
                 item.UpdateStats(this);
             }
         }
     }
 
     public void GetCommonItem() {
-        int item = UnityEngine.Random.Range(0, NUM_COMMON_ITEMS-1);
+        int item = UnityEngine.Random.Range(0, num_common_items-1);
         inventory[item].count+=1;
-        inventory[item].MakePopup();
+        //inventory[item].MakePopup();
         UpdateStats();
     }
     public void GetRareItem() {
-        int item = UnityEngine.Random.Range(NUM_COMMON_ITEMS, NUM_RARE_ITEMS-1);
+        int item = UnityEngine.Random.Range(num_common_items, num_common_items+num_rare_items-1);
         inventory[item].count+=1;
-        inventory[item].MakePopup();
+        //inventory[item].MakePopup();
         UpdateStats();
     }
     public void GetLegendaryItem() {
-        int item = UnityEngine.Random.Range(NUM_COMMON_ITEMS+NUM_RARE_ITEMS, NUM_LEGENDARY_ITEMS-1);
+        int item = UnityEngine.Random.Range(num_common_items+num_rare_items, num_common_items+num_rare_items+num_legendary_items-1);
+        Debug.Log("Item: " + item);
         inventory[item].count+=1;
-        inventory[item].MakePopup();
+        //inventory[item].MakePopup();
         UpdateStats();
     }
 }

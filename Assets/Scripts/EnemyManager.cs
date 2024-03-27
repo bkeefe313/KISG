@@ -31,6 +31,8 @@ public class EnemyManager : MonoBehaviour
 
         if (CanSeePlayer())
             MoveTowardsPlayer();
+        else
+            Velocity = Vector3.zero;
         CheckAttacks();
 
         DoGravity();
@@ -44,8 +46,7 @@ public class EnemyManager : MonoBehaviour
 
     bool CanSeePlayer() 
     {
-        GameObject player = GameObject.Find("Player");
-        Vector3 playerPosition = player.transform.position;
+        Vector3 playerPosition = playerManager.transform.position;
 
         // Enemies are on layer 6 (ignore)
         int layerMask = 1 << 6;

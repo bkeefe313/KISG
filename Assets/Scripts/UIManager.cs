@@ -23,7 +23,7 @@ public class UIManager : MonoBehaviour
         foreach (Item item in inventory)
         {
             if(item.count > 0)
-                result += item.itemname + ", ";
+                result += item.itemname + " x" + item.count + ", ";
         }
         return result;
     }
