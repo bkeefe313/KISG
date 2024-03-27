@@ -139,6 +139,7 @@ public class PlayerManager : MonoBehaviour
         // slow rotation if moving quickly using magnitude of movement vector
         int sign = Vector3.Dot(Velocity, dir) > 0 ? 1 : -1;
         float rotFactor = sign * (Mathf.Abs(Velocity.magnitude) < 1 ? 0 : (1/Mathf.Sqrt(Mathf.Abs(Velocity.magnitude))));
+        rotFactor = rotFactor * (handbraking ? realStats.handbrakeMultiplier : 1);
         if(Input.GetKey(KeyCode.A))
         {
             Rotation = -RotationSpeed/10 * rotFactor;
