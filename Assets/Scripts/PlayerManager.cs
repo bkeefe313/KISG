@@ -20,6 +20,8 @@ public class PlayerManager : MonoBehaviour
     float timeSinceFreeze = 0;
     public GameObject hitFX;
     public bool boosting = false;
+    public float invincibilityTimer = 0;
+    public bool invincible = false;
 
     // CONTROLLER
     CharacterController Controller;
@@ -29,6 +31,8 @@ public class PlayerManager : MonoBehaviour
     public float RotationSpeed;
     Vector3 hbForward = new Vector3(0, 0, 1);
     public bool grounded;
+    public BoxCollider playerCollider;
+    public Rigidbody playerRB;
 
     // WORLD
     public GameObject Terrain;
@@ -45,6 +49,8 @@ public class PlayerManager : MonoBehaviour
         uimanager = GameObject.Find("Game Manager").GetComponent<UIManager>();
         Controller = GetComponent<CharacterController>();
         inventory = GetComponent<PlayerInventory>();
+        playerCollider = GetComponent<BoxCollider>();
+        playerRB = GetComponent<Rigidbody>();
 
         baseStats = new Stats();
         realStats = new Stats();
@@ -55,6 +61,13 @@ public class PlayerManager : MonoBehaviour
     void FixedUpdate() {
         DoGravity();
         ApplyMovement();
+        if (invincible)
+            invincibilityTimer += Time.deltaTime;
+        if (invincibilityTimer > 1f) 
+        {
+            invincible = false;
+            invincibilityTimer = 0;
+        }
     }
 
     void Update()
@@ -253,7 +266,11 @@ public class PlayerManager : MonoBehaviour
     void OnTriggerEnter(Collider other) {
         Debug.Log("Triggered");
         if (other.gameObject.tag == "Projectile") {
-            other.gameObject.GetComponent<SlimeProjectile>().Destroy();
+            other.gameObject.GetComponent<SlimeProjectile>().Destroy(this);
         }
+    }
+
+    public void TakeDamage(float damage) {
+        health -= damage / realStats.defenseMultiplier;
     }
 }

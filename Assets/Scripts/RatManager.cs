@@ -10,6 +10,7 @@ public class RatManager : EnemyManager
     {
         base.FixedUpdate();
         Acceleration = Vector3.zero;
+        Attack();
 
         if (CanSeePlayer())
             MoveTowardsPlayer();
@@ -22,7 +23,7 @@ public class RatManager : EnemyManager
 
     bool CanSeePlayer() 
     {
-        Vector3 playerPosition = playerManager.transform.position;
+        Vector3 playerPosition = player.transform.position;
 
         // Enemies are on layer 6 (ignore)
         int layerMask = 1 << 6;
@@ -97,5 +98,15 @@ public class RatManager : EnemyManager
         Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, layerMask);
         grounded = hit.distance < 0.5f;
         Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * hit.distance, Color.red);
+    }
+
+    //enemy attack
+    void Attack(){
+        BoxCollider enemyAttackBox = this.enemyCollider;
+        BoxCollider playerCollider = player.playerCollider;
+        if(playerCollider.bounds.Intersects(enemyAttackBox.bounds) && !player.invincible){
+            player.TakeDamage(attackDmg);
+            player.invincible = true;
+        }
     }
 }

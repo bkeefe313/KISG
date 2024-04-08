@@ -30,7 +30,7 @@ public class SlimeManager : EnemyManager
 
     void DoAttacks()
     {
-        Quaternion firingDir = Quaternion.LookRotation(playerManager.transform.position - transform.position);
+        Quaternion firingDir = Quaternion.LookRotation(player.transform.position - transform.position);
         Vector3 firingDirVec = firingDir.eulerAngles.normalized;
 
         if (TimeSinceFired > FireDelay)
@@ -44,7 +44,7 @@ public class SlimeManager : EnemyManager
 
     bool PlayerInRange()
     {
-        Vector3 playerPosition = playerManager.transform.position;
+        Vector3 playerPosition = player.transform.position;
         Vector3 enemyPosition = transform.position;
 
         return Vector3.Distance(playerPosition, enemyPosition) < FiringRange;
@@ -52,7 +52,7 @@ public class SlimeManager : EnemyManager
 
     bool CanSeePlayer() 
     {
-        Vector3 playerPosition = playerManager.transform.position;
+        Vector3 playerPosition = player.transform.position;
 
         // Enemies are on layer 6 (ignore)
         int layerMask = 1 << 6;

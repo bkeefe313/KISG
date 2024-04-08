@@ -13,8 +13,9 @@ public class SlimeProjectile : MonoBehaviour
         transform.position += transform.forward * Speed * Time.deltaTime;
     }
 
-    public void Destroy()
+    public void Destroy(PlayerManager player)
     {
+        player.TakeDamage(10);
         Instantiate(Explosion, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }

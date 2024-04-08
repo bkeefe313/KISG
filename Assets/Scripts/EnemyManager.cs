@@ -5,12 +5,16 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-    protected PlayerManager playerManager;
+    protected PlayerManager player;
     public float health = 100;
     public float defenseMultiplier = 1;
     public GameObject damagePopup;
     float invincibilityTimer = 0.5f;
     public int type = 0;
+    public BoxCollider enemyCollider;
+    public float KnockbackStrength = 20f;
+    public float attackDmg = 10;
+    public float attackRate = 1;
 
     // MOVEMENT
     public float Speed = 1;
@@ -22,12 +26,14 @@ public class EnemyManager : MonoBehaviour
 
     void Start()
     {
-        playerManager = GameObject.Find("Player").GetComponent<PlayerManager>();
+        player = GameObject.Find("Player").GetComponent<PlayerManager>();
+        enemyCollider = GetComponent<BoxCollider>();
     }
 
     public virtual void FixedUpdate()
     {
         CheckAttacks();
+        CollideWithPlayer();
 
         if (health <= 0)
         {
@@ -36,8 +42,8 @@ public class EnemyManager : MonoBehaviour
     }
 
     void CheckAttacks() {
-        GameObject playerAttackBox = playerManager.AttackBox;
-        if(playerManager.attacking) {
+        GameObject playerAttackBox = player.AttackBox;
+        if(player.attacking) {
             // Get the player's attack box
             BoxCollider playerCollider = playerAttackBox.GetComponent<BoxCollider>();
 
@@ -48,12 +54,12 @@ public class EnemyManager : MonoBehaviour
             if (playerCollider.bounds.Intersects(enemyCollider.bounds) && invincibilityTimer > 0.5f)
             {
                 // If the player's attack box is colliding with the enemy's attack box, deal damage to the enemy
-                health -= playerManager.GetDamage() / defenseMultiplier;
+                health -= player.GetDamage() / defenseMultiplier;
                 DamagePopup dmg = Instantiate(damagePopup, transform.position, Quaternion.identity).GetComponent<DamagePopup>();
-                dmg.SetDamage(playerManager.GetDamage() / defenseMultiplier);
+                dmg.SetDamage(player.GetDamage() / defenseMultiplier);
 
                 invincibilityTimer = 0;
-                Knockback(playerManager.realStats.knockback, -transform.forward);
+                Knockback(player.realStats.knockback, -transform.forward);
             }
 
             invincibilityTimer += Time.deltaTime;
@@ -66,7 +72,18 @@ public class EnemyManager : MonoBehaviour
     }
 
     void DestroyEnemy() {
-        playerManager.KilledEnemy(type);
+        player.KilledEnemy(type);
         Destroy(gameObject);
+    }
+
+    //knockback player if collide with enemy.
+    void CollideWithPlayer(){
+        BoxCollider playerCollider = player.playerCollider;
+        BoxCollider enemyCollider = GetComponent<BoxCollider>();
+        if(playerCollider.bounds.Intersects(enemyCollider.bounds)) {
+            Vector3 KnockBackDir = player.transform.position - transform.position;
+            KnockBackDir.Normalize();
+            player.Velocity += KnockBackDir * KnockbackStrength;
+        }
     }
 }
