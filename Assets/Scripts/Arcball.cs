@@ -38,7 +38,8 @@ public class CameraMove : MonoBehaviour
         currentY = Mathf.Clamp(currentY, YMin, YMax);
  
         Vector3 Direction = new Vector3(0, 0, -distance);
-        Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
+        Quaternion rotation = Quaternion.Euler(0, currentX, 0);
+        rotation = rotation * Quaternion.Euler(currentY, Player.eulerAngles.y, 0);
         transform.position = lookAt.position + rotation * Direction;
  
         transform.LookAt(lookAt.position);

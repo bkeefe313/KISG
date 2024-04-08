@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Stats
 {
-    public float health;
+    public float maxHealth;
     public float speed;
     public float speedMultiplier;
     public float jumpForce;
@@ -16,10 +16,10 @@ public class Stats
     public float handbrakeMultiplier;
     public float knockback;
     public Stats(Dictionary<string, float> stats = null) {
-        health = (stats != null && stats["health"] > 0) ? stats["health"] : 100;
+        maxHealth = (stats != null && stats["health"] > 0) ? stats["health"] : 100;
         speed = (stats != null && stats["speed"] > 0) ? stats["speed"] : 20;
-        speedMultiplier = (stats != null && stats["speedMultiplier"] > 0) ? stats["speedMultiplier"] : 1;
-        jumpForce = (stats != null && stats["jumpForce"] > 0) ? stats["jumpForce"] : 50;
+        speedMultiplier = (stats != null && stats["speedMultiplier"] > 0) ? stats["speedMultiplier"] : 0.5f;
+        jumpForce = (stats != null && stats["jumpForce"] > 0) ? stats["jumpForce"] : 20;
         baseDamage = (stats != null && stats["baseDamage"] > 0) ? stats["baseDamage"] : 10;
         attackMultiplier = (stats != null && stats["attackMultiplier"] > 0) ? stats["attackMultiplier"] : 1;
         defenseMultiplier = (stats != null && stats["defenseMultiplier"] > 0) ? stats["defenseMultiplier"] : 1;
@@ -31,7 +31,7 @@ public class Stats
 
     public Stats(Stats other) {
         if (other != null) {
-            health = other.health;
+            maxHealth = other.maxHealth;
             speed = other.speed;
             speedMultiplier = other.speedMultiplier;
             jumpForce = other.jumpForce;
