@@ -5,17 +5,10 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    // ITEM CONSTANTS
-    int num_common_items;
-    int num_rare_items;
-    int num_legendary_items;
     // STATS
     public Stats baseStats;
     public Stats realStats;
-
-    // INVENTORY
-    public List<Item> inventory;
-    public int money;
+    public float health;
 
     // OTHER
     UIManager uimanager;
@@ -26,6 +19,7 @@ public class PlayerManager : MonoBehaviour
     public bool handbraking = false;
     float timeSinceFreeze = 0;
     public GameObject hitFX;
+    public bool boosting = false;
 
     // CONTROLLER
     CharacterController Controller;
@@ -34,39 +28,32 @@ public class PlayerManager : MonoBehaviour
     public float Rotation;
     public float RotationSpeed;
     Vector3 hbForward = new Vector3(0, 0, 1);
-    bool grounded;
+    public bool grounded;
 
     // WORLD
     public GameObject Terrain;
     public Transform Cam;
+    public PlayerInventory inventory;
+
+    public Terrain terrain;
+    public float heightChange;
+    public float currentHeight;
 
     // Start is called before the first frame update
     void Start()
     {
         uimanager = GameObject.Find("Game Manager").GetComponent<UIManager>();
         Controller = GetComponent<CharacterController>();
-
-        num_common_items = 0;
-        num_rare_items = 0;
-        num_legendary_items = 0;
-        foreach (Item item in inventory) {
-            item.count = 0;
-            if (item.rarity == 0) {
-                num_common_items++;
-            } else if (item.rarity == 1) {
-                num_rare_items++;
-            } else if (item.rarity == 2) {
-                num_legendary_items++;
-            }
-        }
+        inventory = GetComponent<PlayerInventory>();
 
         baseStats = new Stats();
         realStats = new Stats();
+
+        health = realStats.maxHealth;
     }
 
     void FixedUpdate() {
         DoGravity();
-
         ApplyMovement();
     }
 
@@ -77,20 +64,27 @@ public class PlayerManager : MonoBehaviour
         Handbrake();
         DoMovement();
         Cheats();
+        RunItems();
+    }
+
+    void RunItems() {
+        foreach (Item item in inventory.inventory) {
+            item.Run();
+        }
     }
 
     void Cheats() {
         if(Input.GetKeyDown(KeyCode.Alpha1))
-            GetCommonItem();
+            inventory.GetCommonItem();
         if(Input.GetKeyDown(KeyCode.Alpha2))
-            GetRareItem();
+            inventory.GetRareItem();
         if(Input.GetKeyDown(KeyCode.Alpha3))
-            GetLegendaryItem();
+            inventory.GetLegendaryItem();
     }
 
     void ApplyMovement() {
         Vector3 xzVelocity = new Vector3(Velocity.x, 0, Velocity.z);
-        if (xzVelocity.magnitude > realStats.speed)
+        if (xzVelocity.magnitude > realStats.speed && !boosting)
             Velocity += Acceleration / Mathf.Pow((xzVelocity.magnitude / realStats.speed),2);
         else
             Velocity += Acceleration;
@@ -101,13 +95,19 @@ public class PlayerManager : MonoBehaviour
             Vector3 xzRot = Quaternion.Euler(0, Rotation*Time.deltaTime, 0) * xzVel;
             Velocity = new Vector3(xzRot.x, Velocity.y, xzRot.z);
         }
-        Controller.Move(Velocity*Time.deltaTime);
+        heightChange = terrain.SampleHeight(transform.position + Velocity * Time.deltaTime) - currentHeight;
+        if(heightChange < 0)
+            heightChange = 0;
+        transform.position += Velocity * Time.deltaTime + new Vector3(0, heightChange, 0);
 
         transform.Rotate(0, Rotation*(handbraking ? realStats.handbrakeMultiplier : 1)*Time.deltaTime, 0);
+        transform.Rotate(0, 0, heightChange*100);
     }
 
     void DoMovement() {
         Vector3 dir = transform.forward;
+        Vector3 xzMovement = new Vector3(Velocity.x, 0, Velocity.z);
+        currentHeight = terrain.SampleHeight(transform.position);
 
         // handbrake keeps direction of movement constant while turning
         if (!handbraking || Velocity.magnitude < 0.1f) {
@@ -119,13 +119,18 @@ public class PlayerManager : MonoBehaviour
 
         if(Input.GetKey(KeyCode.W) && !handbraking)
         {   
-            Acceleration = transform.forward * realStats.speedMultiplier;
+            if(Velocity.magnitude > 0.1f && Vector3.Dot(Velocity, -transform.forward) > 0)
+                Acceleration = transform.forward * realStats.speedMultiplier * 10;
+            else
+                Acceleration = transform.forward * realStats.speedMultiplier;
         } else if(Input.GetKey(KeyCode.S) && !handbraking)
         {
-            Acceleration = -transform.forward * realStats.speedMultiplier;
+            if(Velocity.magnitude > 0.1f && Vector3.Dot(Velocity, transform.forward) > 0)
+                Acceleration = -transform.forward * realStats.speedMultiplier * 10;
+            else
+                Acceleration = -transform.forward * realStats.speedMultiplier;
         } else
         {
-            Vector3 xzMovement = new Vector3(Velocity.x, 0, Velocity.z);
             if (Mathf.Abs(Velocity.magnitude) < realStats.speedMultiplier*2) {
                 Velocity = new Vector3(0, Velocity.y, 0);
             } else if (!handbraking){
@@ -171,9 +176,15 @@ public class PlayerManager : MonoBehaviour
         int layerMask = 1 << 3;
         layerMask = ~layerMask;
 
-        RaycastHit hit;
-        grounded = Physics.Raycast(transform.position, Vector3.down, out hit, 0.5f, layerMask);
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * hit.distance, Color.yellow);
+        // RaycastHit hit;
+        // grounded = Physics.Raycast(transform.position, Vector3.down, out hit, 0.5f, layerMask);
+        // Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * hit.distance, Color.yellow);
+
+        currentHeight = terrain.SampleHeight(transform.position);
+        float diff = transform.position.y - currentHeight;
+        grounded = diff < 0.1f;
+        if (diff < 0)
+            transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);
     }
 
     void Handbrake() {
@@ -209,8 +220,8 @@ public class PlayerManager : MonoBehaviour
     }
 
     public void KilledEnemy(int type) {
-        money += type * 10;
-        uimanager.UpdateMoney(money);
+        inventory.money += type * 10;
+        uimanager.UpdateMoney(inventory.money);
     }
 
     public float GetDamage() {
@@ -228,34 +239,21 @@ public class PlayerManager : MonoBehaviour
         return damage;
     }
 
-    void UpdateStats() {
+    public void UpdateStats() {
         // reset to base stats
         realStats = new Stats(baseStats);
         // apply item effects
-        foreach (Item item in inventory) {
+        foreach (Item item in inventory.inventory) {
             for(int i = item.count; i > 0; i--) {
                 item.UpdateStats(this);
             }
         }
     }
 
-    public void GetCommonItem() {
-        int item = UnityEngine.Random.Range(0, num_common_items-1);
-        inventory[item].count+=1;
-        //inventory[item].MakePopup();
-        UpdateStats();
-    }
-    public void GetRareItem() {
-        int item = UnityEngine.Random.Range(num_common_items, num_common_items+num_rare_items-1);
-        inventory[item].count+=1;
-        //inventory[item].MakePopup();
-        UpdateStats();
-    }
-    public void GetLegendaryItem() {
-        int item = UnityEngine.Random.Range(num_common_items+num_rare_items, num_common_items+num_rare_items+num_legendary_items-1);
-        Debug.Log("Item: " + item);
-        inventory[item].count+=1;
-        //inventory[item].MakePopup();
-        UpdateStats();
+    void OnTriggerEnter(Collider other) {
+        Debug.Log("Triggered");
+        if (other.gameObject.tag == "Projectile") {
+            other.gameObject.GetComponent<SlimeProjectile>().Destroy();
+        }
     }
 }

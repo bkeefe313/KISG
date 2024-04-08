@@ -48,10 +48,11 @@ MonoBehaviour:
   itemname: Dirty Syringe
   rarity: 0
   id: 1
-  count: 0
+  count: 5
   Popup: {fileID: 433947054933733324, guid: 47e376187fd104c1ebacdf0f1779fffd, type: 3}
   model: {fileID: 0}
   effects: {fileID: 6140072043674477571}
+  icon: {fileID: 21300000, guid: 911f8a02d79b349928f0a8dfad6e7a41, type: 3}
 --- !u!114 &6140072043674477571
 MonoBehaviour:
   m_ObjectHideFlags: 0

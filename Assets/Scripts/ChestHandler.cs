@@ -6,14 +6,17 @@ public class ChestHandler : MonoBehaviour
 {
 
     PlayerManager manager;
+    PlayerInventory inventory;
     UIManager uimanager;
     public int rarity;
     public float chestOpenDistance = 15f;
+
 
     void Start()
     {
         manager = GameObject.Find("Player").GetComponent<PlayerManager>();
         uimanager = GameObject.Find("Game Manager").GetComponent<UIManager>();
+        inventory = GameObject.Find("Player").GetComponent<PlayerInventory>();
     }
 
     void OpenChest() {
@@ -44,13 +47,13 @@ public class ChestHandler : MonoBehaviour
         }
         if (random < lowerBound) {
             // Add common item to inventory
-            manager.GetCommonItem();
+            inventory.GetCommonItem();
         } else if (random < upperBound) {
             // Add rare item to inventory
-            manager.GetRareItem();
+            inventory.GetRareItem();
         } else {
             // Add legendary item to inventory
-            manager.GetLegendaryItem();
+            inventory.GetLegendaryItem();
         }
     }
 
@@ -66,10 +69,10 @@ public class ChestHandler : MonoBehaviour
         float distance = Vector3.Distance(playerPosition, chestPosition);
 
         // If the player is close enough to the chest, open it
-        if (distance < chestOpenDistance && Input.GetKeyDown(KeyCode.E) && manager.money >= rarity*100)
+        if (distance < chestOpenDistance && Input.GetKeyDown(KeyCode.E) && inventory.money >= rarity*100)
         {
             OpenChest();
-            manager.money -= rarity*100;
+            inventory.money -= rarity*100;
             Destroy(gameObject);
         }
     }

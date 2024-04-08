@@ -4919,10 +4919,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5102923769001297339}
+      addedObject: {fileID: 4219927526070785787}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4219927526070785787}
+      addedObject: {fileID: -1429444171300516278}
   m_SourcePrefab: {fileID: 100100000, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
 --- !u!4 &8559231781077563435 stripped
 Transform:
@@ -4934,28 +4934,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
   m_PrefabInstance: {fileID: 8161303769613721536}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5102923769001297339
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9044265270791430801}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78e1de75946fdb54da6607a207b11445, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 100
-  defenseMultiplier: 1
-  damagePopup: {fileID: 8014674783101511761, guid: 730d6f21848b48248a858313287e2ce2, type: 3}
-  type: 2
-  gravity: -100
-  grounded: 0
-  Speed: 5
-  Displacement: {x: 0, y: 0, z: 0}
-  Velocity: {x: 0, y: 0, z: 0}
-  Acceleration: {x: 0, y: 0, z: 0}
 --- !u!65 &4219927526070785787
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4977,3 +4955,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 5.49, y: 3.63, z: 4.92}
   m_Center: {x: 0, y: 1.3, z: 0.29}
+--- !u!114 &-1429444171300516278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9044265270791430801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89aaf2686917f48cfabb51efa09ecfbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  defenseMultiplier: 1
+  damagePopup: {fileID: 8014674783101511761, guid: 730d6f21848b48248a858313287e2ce2, type: 3}
+  type: 2
+  Speed: 5
+  Displacement: {x: 0, y: 0, z: 0}
+  Velocity: {x: 0, y: 0, z: 0}
+  Acceleration: {x: 0, y: 0, z: 0}
+  gravity: -100
+  grounded: 0
+  FiringRange: 40
+  Projectile: {fileID: 8958195907119758749, guid: 0d4b496b291004d13b71f0a86290636b, type: 3}
+  FireDelay: 2

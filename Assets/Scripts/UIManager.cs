@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    public PlayerManager manager;
+    public PlayerManager playerManager;
+    public PlayerInventory playerInventory;
 
     void Start()
     {
-        manager = GameObject.Find("Player").GetComponent<PlayerManager>();
+        playerManager = GameObject.Find("Player").GetComponent<PlayerManager>();
+        playerInventory = GameObject.Find("Player").GetComponent<PlayerInventory>();
     }
     void OnGUI()
     {
         GUI.Box(new Rect(40, 5, 1000, 90), "Player Stats");
-        GUI.Label(new Rect(50, 20, 900, 20), "Health: " + manager.realStats.health);
-        GUI.Label(new Rect(50, 40, 900, 20), "Money: " + manager.money);
-        GUI.Label(new Rect(50, 60, 900, 20), "Inventory: " + inventoryString(manager.inventory));
+        GUI.Label(new Rect(50, 20, 900, 20), "Health: " + playerManager.health + "/" + playerManager.realStats.maxHealth);
+        GUI.Label(new Rect(50, 40, 900, 20), "Money: " + playerInventory.money);
+        GUI.Label(new Rect(50, 60, 900, 20), "Inventory: " + inventoryString(playerInventory.inventory));
     }
     string inventoryString(List<Item> inventory)
     {
@@ -30,6 +32,6 @@ public class UIManager : MonoBehaviour
 
     public void UpdateMoney(int amount)
     {
-        manager.money = amount;
+        playerInventory.money = amount;
     }
 }

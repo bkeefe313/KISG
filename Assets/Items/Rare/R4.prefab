@@ -45,13 +45,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 278a9592a29a76d46bbfb9b72acfba98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemname: R4
-  rarity: 0
+  itemname: Pipe Bomb
+  rarity: 1
   id: 104
   count: 0
   Popup: {fileID: 433947054933733324, guid: 47e376187fd104c1ebacdf0f1779fffd, type: 3}
   model: {fileID: 0}
   effects: {fileID: -7431795485067621221}
+  icon: {fileID: 21300000, guid: abf5681c9789d4cf5b008ef6f8521ff6, type: 3}
 --- !u!114 &-7431795485067621221
 MonoBehaviour:
   m_ObjectHideFlags: 0
