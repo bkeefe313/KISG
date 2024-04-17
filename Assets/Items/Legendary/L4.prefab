@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemname: L4
-  rarity: 0
+  rarity: 2
   id: 204
   count: 0
   Popup: {fileID: 433947054933733324, guid: 47e376187fd104c1ebacdf0f1779fffd, type: 3}
@@ -76,3 +76,4 @@ MonoBehaviour:
   money: 0
   handbrakeMultiplier: 0
   knockback: 0
+  runnable: {fileID: 0}

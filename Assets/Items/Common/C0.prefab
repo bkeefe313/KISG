@@ -52,6 +52,7 @@ MonoBehaviour:
   Popup: {fileID: 433947054933733324, guid: 47e376187fd104c1ebacdf0f1779fffd, type: 3}
   model: {fileID: 0}
   effects: {fileID: 4594083296044624220}
+  icon: {fileID: 21300000, guid: 629c29697879541dc90b50f7572e285b, type: 3}
 --- !u!114 &4594083296044624220
 MonoBehaviour:
   m_ObjectHideFlags: 0
