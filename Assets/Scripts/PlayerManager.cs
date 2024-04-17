@@ -211,14 +211,15 @@ public class PlayerManager : MonoBehaviour
     }
 
     void Attack() {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && timeSinceLastAttack > realStats.attackSpeed && !attacking)
         {
             timeSinceLastAttack = 0;
             // play animation
             Debug.Log("Attacking"); 
             weapon.GetComponent<Animator>().SetBool("Attacking", true);
             attacking = true;
-        } else if (Input.GetMouseButtonUp(0))
+        }
+        if (attacking && timeSinceLastAttack > 0.75f)
         {
             weapon.GetComponent<Animator>().SetBool("Attacking", false);
             attacking = false;
@@ -261,6 +262,7 @@ public class PlayerManager : MonoBehaviour
                 item.UpdateStats(this);
             }
         }
+        weapon.GetComponent<Animator>().SetFloat("AttackSpeedMult", realStats.attackSpeed);
     }
 
     void OnTriggerEnter(Collider other) {

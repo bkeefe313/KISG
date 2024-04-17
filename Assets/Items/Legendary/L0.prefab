@@ -46,9 +46,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemname: Printer
-  rarity: 0
+  rarity: 2
   id: 200
-  count: 3
+  count: 0
   Popup: {fileID: 433947054933733324, guid: 47e376187fd104c1ebacdf0f1779fffd, type: 3}
   model: {fileID: 0}
   effects: {fileID: 4437655753770198668}
