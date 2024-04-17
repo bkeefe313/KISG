@@ -18,23 +18,30 @@ public class Item : MonoBehaviour
 
     public void Init() {
         effects = gameObject.GetComponent<ItemEffectContainer>();
-        if (id == 4)
+        if (id == 204)
         {
             runnable = new RocketBooster();
-            runnable.Init(ref count);
+            runnable.Init(this);
         }
         // Burnt Turkey
         if (id == 100)
         {
             runnable = new TurkeyHeals();
-            runnable.Init(ref count);
+            runnable.Init(this);
         }
         // Printer
-        if (id == 101)
+        if (id == 200)
         {
             runnable = new Printer();
-            runnable.Init(ref count);
+            runnable.Init(this);
         }
+        // Green Creature
+        if (id == 202)
+        {
+            runnable = new GreenCreature();
+            runnable.Init(this);
+        }
+        
     }
 
     public void MakePopup() 

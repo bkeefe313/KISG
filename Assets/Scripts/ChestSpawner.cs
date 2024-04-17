@@ -7,6 +7,7 @@ using UnityEngine;
     public GameObject rareChest;
     public GameObject mediumChest;
     public GameObject commonChest;
+    public GameObject Spire;
     public float heightLimit;
     public GameObject Terrain;
 
@@ -40,10 +41,26 @@ using UnityEngine;
             spawnPoints.Add(new Vector3(x, y, z));
         }
 
-        SpawnChest(spawnPoints);
+        SpawnChests(spawnPoints);
+        SpawnSpire(terrainWidth, terrainLength, terrain);
     }
 
-    void SpawnChest(List<Vector3> spawnPoints)
+    void SpawnSpire(float terrainWidth, float terrainLength, Terrain terrain)
+    {
+        float x = 0f;
+        float z = 0f;
+        float y = -1f;
+        while (y > heightLimit || y < 0f)
+        {
+            x = Random.Range(-terrainWidth / 2, terrainWidth / 2);
+            z = Random.Range(-terrainLength / 2, terrainLength / 2);
+            y = terrain.SampleHeight(new Vector3(x, 0, z));
+        }
+
+        Instantiate(Spire, new Vector3(x, y, z), Quaternion.identity);
+    }
+
+    void SpawnChests(List<Vector3> spawnPoints)
     {
         for (int i = 0; i < spawnPoints.Count; i++)
         {

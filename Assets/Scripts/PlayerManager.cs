@@ -42,6 +42,7 @@ public class PlayerManager : MonoBehaviour
     public Terrain terrain;
     public float heightChange;
     public float currentHeight;
+    public ParticleSystem RocketBoostFX;
 
     // Start is called before the first frame update
     void Start()
@@ -51,6 +52,8 @@ public class PlayerManager : MonoBehaviour
         inventory = GetComponent<PlayerInventory>();
         playerCollider = GetComponent<BoxCollider>();
         playerRB = GetComponent<Rigidbody>();
+        RocketBoostFX = GetComponent<ParticleSystem>();
+
 
         baseStats = new Stats();
         realStats = new Stats();
@@ -72,12 +75,43 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
+        PollInputs();
+        if(Time.timeScale == 0) 
+            return;
         Acceleration = Vector3.zero;
         Attack();
         Handbrake();
-        DoMovement();
+        PollMovement();
         Cheats();
         RunItems();
+        RespawnIfDead();
+        BoostFX();
+    }
+
+    void PollInputs() {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            uimanager.TogglePauseMenu();
+        }
+    }
+
+    void BoostFX() {
+        if (boosting) {
+            RocketBoostFX.Play();
+        } else {
+            RocketBoostFX.Stop();
+        }
+    }
+
+    void RespawnIfDead() {
+        if (health <= 0) {
+            health = realStats.maxHealth;
+            transform.position = new Vector3(0, 10, 0);
+        }
+        if (transform.position.y < -10) {
+            health = realStats.maxHealth;
+            transform.position = new Vector3(0, 10, 0);
+        }
     }
 
     void RunItems() {
@@ -111,13 +145,16 @@ public class PlayerManager : MonoBehaviour
         heightChange = terrain.SampleHeight(transform.position + Velocity * Time.deltaTime) - currentHeight;
         if(heightChange < 0)
             heightChange = 0;
+        // scale velocity down based on height change
+        Velocity /= Mathf.Pow(heightChange/10 + 1, 2);
+
+        // move player
         transform.position += Velocity * Time.deltaTime + new Vector3(0, heightChange, 0);
 
         transform.Rotate(0, Rotation*(handbraking ? realStats.handbrakeMultiplier : 1)*Time.deltaTime, 0);
-        transform.Rotate(0, 0, heightChange*100);
     }
 
-    void DoMovement() {
+    void PollMovement() {
         Vector3 dir = transform.forward;
         Vector3 xzMovement = new Vector3(Velocity.x, 0, Velocity.z);
         currentHeight = terrain.SampleHeight(transform.position);
@@ -139,7 +176,7 @@ public class PlayerManager : MonoBehaviour
         } else if(Input.GetKey(KeyCode.S) && !handbraking)
         {
             if(Velocity.magnitude > 0.1f && Vector3.Dot(Velocity, transform.forward) > 0)
-                Acceleration = -transform.forward * realStats.speedMultiplier * 10;
+                Acceleration = -transform.forward * realStats.speedMultiplier * Velocity.magnitude;
             else
                 Acceleration = -transform.forward * realStats.speedMultiplier;
         } else
@@ -155,8 +192,8 @@ public class PlayerManager : MonoBehaviour
         }
 
         // slow rotation if moving quickly using magnitude of movement vector
-        int sign = Vector3.Dot(Velocity, dir) > 0 ? 1 : -1;
-        float rotFactor = sign * (Mathf.Abs(Velocity.magnitude) < 1 ? 0 : (1/Mathf.Sqrt(Mathf.Abs(Velocity.magnitude))));
+        int sign = Vector3.Dot(Velocity, dir) > 0 ? -1 : 1;
+        float rotFactor = sign * (Mathf.Abs(Velocity.magnitude) < 1 ? realStats.speedMultiplier : -(1/Mathf.Sqrt(Mathf.Abs(Velocity.magnitude))));
         rotFactor = rotFactor * (handbraking ? realStats.handbrakeMultiplier : 1);
         if(Input.GetKey(KeyCode.A))
         {
@@ -211,7 +248,7 @@ public class PlayerManager : MonoBehaviour
     }
 
     void Attack() {
-        if (Input.GetMouseButtonDown(0) && timeSinceLastAttack > realStats.attackSpeed && !attacking)
+        if (Input.GetMouseButtonDown(0) && weapon.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("idlesword") && !attacking)
         {
             timeSinceLastAttack = 0;
             // play animation
@@ -219,7 +256,7 @@ public class PlayerManager : MonoBehaviour
             weapon.GetComponent<Animator>().SetBool("Attacking", true);
             attacking = true;
         }
-        if (attacking && timeSinceLastAttack > 0.75f)
+        else if (weapon.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("idlesword"))
         {
             weapon.GetComponent<Animator>().SetBool("Attacking", false);
             attacking = false;
@@ -242,7 +279,7 @@ public class PlayerManager : MonoBehaviour
         Time.timeScale = 0.05f;
         timeSinceFreeze = 0;
 
-        float damage = realStats.baseDamage * realStats.attackMultiplier * (Velocity.magnitude / realStats.speed);
+        float damage = realStats.baseDamage * realStats.attackMultiplier * (0.1f + (Velocity.magnitude / realStats.speed));
 
         // Damage Particle Effect
         GameObject fx = Instantiate(hitFX, weapon.transform.position, Quaternion.identity);

@@ -6,25 +6,27 @@ using UnityEngine;
 public class RocketBooster : ItemRunnable
 {
     private PlayerManager player;
-    private float power = 0.05f;
+    private float power = 1f;
 
     public RocketBooster()
     {
         key = KeyCode.C;
     }
 
-    override public void Init(ref int c)
+    override public void Init(Item i)
     {
         player = GameObject.Find("Player").GetComponent<PlayerManager>();
-        count = c;
+        item = i;
     }
-
     override public void Run()
     {
-        if (Input.GetKey(key))
+        if (Input.GetKey(key) && item.count > 0)
         {
-            Vector3 xzVel = new Vector3(player.Velocity.x, 0, player.Velocity.z);
-            player.Velocity += xzVel.normalized * power * count;
+            player.Velocity += player.transform.forward * power * item.count;
+            player.boosting = true;
+        } else
+        {
+            player.boosting = false;
         }
     }
 }

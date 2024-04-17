@@ -4902,6 +4902,10 @@ MonoBehaviour:
   defenseMultiplier: 1
   damagePopup: {fileID: 8014674783101511761, guid: 730d6f21848b48248a858313287e2ce2, type: 3}
   type: 1
+  enemyCollider: {fileID: 0}
+  KnockbackStrength: 15
+  attackDmg: 10
+  attackRate: 1
   Speed: 20
   Displacement: {x: 0, y: 0, z: 0}
   Velocity: {x: 0, y: 0, z: 0}

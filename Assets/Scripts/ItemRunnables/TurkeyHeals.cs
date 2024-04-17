@@ -11,18 +11,18 @@ public class TurkeyHeals : ItemRunnable
 
     public TurkeyHeals(){}
 
-    override public void Init(ref int c)
+    override public void Init(Item i)
     {
         player = GameObject.Find("Player").GetComponent<PlayerManager>();
-        count = c;
+        item = i;
     }
 
     override public void Run()
     {
         if(sinceLastHeal >= delay)
         {
-            player.health += healAmount * count;
-            Debug.Log("Healed for " + healAmount * count + " health");
+            player.health += healAmount * item.count;
+            Debug.Log("Healed for " + healAmount * item.count + " health");
             // if (player.health > player.realStats.maxHealth)
             // {
             //     player.health = player.realStats.maxHealth;

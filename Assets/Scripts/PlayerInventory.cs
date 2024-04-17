@@ -36,19 +36,19 @@ public class PlayerInventory : MonoBehaviour
     }
 
     public void GetCommonItem() {
-        int item = UnityEngine.Random.Range(0, num_common_items-1);
+        int item = UnityEngine.Random.Range(0, num_common_items);
         inventory[item].count+=1;
         inventory[item].MakePopup();
         playerManager.UpdateStats();
     }
     public void GetRareItem() {
-        int item = UnityEngine.Random.Range(num_common_items, num_common_items+num_rare_items-1);
+        int item = UnityEngine.Random.Range(num_common_items, num_common_items+num_rare_items);
         inventory[item].count+=1;
         inventory[item].MakePopup();
         playerManager.UpdateStats();
     }
     public void GetLegendaryItem() {
-        int item = UnityEngine.Random.Range(num_common_items+num_rare_items, num_common_items+num_rare_items+num_legendary_items-1);
+        int item = UnityEngine.Random.Range(num_common_items+num_rare_items, num_common_items+num_rare_items+num_legendary_items);
         Debug.Log("Item: " + item);
         inventory[item].count+=1;
         inventory[item].MakePopup();
