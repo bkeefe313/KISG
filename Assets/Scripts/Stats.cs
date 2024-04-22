@@ -25,7 +25,7 @@ public class Stats
         defenseMultiplier = (stats != null && stats["defenseMultiplier"] > 0) ? stats["defenseMultiplier"] : 1;
         attackSpeed = (stats != null && stats["attackSpeed"] > 0) ? stats["attackSpeed"] : 1;
         gravity = (stats != null && stats["gravity"] < 0) ? stats["gravity"] : -100f;
-        handbrakeMultiplier = (stats != null && stats["handbrakeMultiplier"] > 0) ? stats["handbrakeMultiplier"] : 0;
+        handbrakeMultiplier = (stats != null && stats["handbrakeMultiplier"] > 0) ? stats["handbrakeMultiplier"] : 0.25f;
         knockback = (stats != null && stats["knockback"] > 0) ? stats["knockback"] : 1;
     }
 

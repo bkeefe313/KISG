@@ -22,11 +22,10 @@ public class TurkeyHeals : ItemRunnable
         if(sinceLastHeal >= delay)
         {
             player.health += healAmount * item.count;
-            Debug.Log("Healed for " + healAmount * item.count + " health");
-            // if (player.health > player.realStats.maxHealth)
-            // {
-            //     player.health = player.realStats.maxHealth;
-            // }
+            if (player.health > player.realStats.maxHealth)
+            {
+                player.health = player.realStats.maxHealth;
+            }
             sinceLastHeal = 0;
         }
         sinceLastHeal += Time.deltaTime;

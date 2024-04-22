@@ -65,14 +65,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee7970b8fede44d3187a2ee2be65885c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 20
-  speed: -5
+  health: 10
+  speed: -2
   speedMultiplier: 0
   jumpForce: 0
   baseDamage: 0
-  attackMultiplier: 0
+  attackMultiplier: 1
   defenseMultiplier: 0
-  attackSpeed: -1
+  attackSpeed: -0.5
   gravity: 0
   money: 0
   handbrakeMultiplier: 0

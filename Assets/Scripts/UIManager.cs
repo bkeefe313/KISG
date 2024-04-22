@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
         GUI.Label(new Rect(50, 60, 900, 20), "Inventory: " + inventoryString(playerInventory.inventory));
         if(paused)
         {
+            // draw pause menu
             GUI.Box(new Rect(500, 200, 200, 100), "Pause Menu");
             if (GUI.Button(new Rect(550, 220, 100, 20), "Resume"))
             {
@@ -50,7 +51,9 @@ public class UIManager : MonoBehaviour
 
     public void TogglePauseMenu()
     {
+        Debug.Log("Toggling pause menu");
         paused = !paused;
         Time.timeScale = paused ? 0 : 1;
+        Cursor.visible = paused;
     }
 }
