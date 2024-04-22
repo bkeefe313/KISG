@@ -46,9 +46,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemname: Green Creature
-  rarity: 0
+  rarity: 2
   id: 202
-  count: 5
+  count: 0
   Popup: {fileID: 433947054933733324, guid: 47e376187fd104c1ebacdf0f1779fffd, type: 3}
   model: {fileID: 0}
   effects: {fileID: 739122977727758478}
@@ -73,7 +73,7 @@ MonoBehaviour:
   attackMultiplier: 0
   defenseMultiplier: 0
   attackSpeed: 0
-  gravity: -1
+  gravity: 0
   money: 0
   handbrakeMultiplier: 0
   knockback: 0

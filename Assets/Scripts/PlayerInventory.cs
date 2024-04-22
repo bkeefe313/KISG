@@ -24,6 +24,10 @@ public class PlayerInventory : MonoBehaviour
         num_legendary_items = 0;
         foreach (Item item in inventory) {
             item.count = 0;
+            // Give the player one handbrake (id 3)
+            if (item.id == 3) {
+                item.count = 1;
+            }
             if (item.rarity == 0) {
                 num_common_items++;
             } else if (item.rarity == 1) {
@@ -33,22 +37,23 @@ public class PlayerInventory : MonoBehaviour
             }
             item.Init();
         }
+
     }
 
     public void GetCommonItem() {
-        int item = UnityEngine.Random.Range(0, num_common_items-1);
+        int item = UnityEngine.Random.Range(0, num_common_items);
         inventory[item].count+=1;
         inventory[item].MakePopup();
         playerManager.UpdateStats();
     }
     public void GetRareItem() {
-        int item = UnityEngine.Random.Range(num_common_items, num_common_items+num_rare_items-1);
+        int item = UnityEngine.Random.Range(num_common_items, num_common_items+num_rare_items);
         inventory[item].count+=1;
         inventory[item].MakePopup();
         playerManager.UpdateStats();
     }
     public void GetLegendaryItem() {
-        int item = UnityEngine.Random.Range(num_common_items+num_rare_items, num_common_items+num_rare_items+num_legendary_items-1);
+        int item = UnityEngine.Random.Range(num_common_items+num_rare_items, num_common_items+num_rare_items+num_legendary_items);
         Debug.Log("Item: " + item);
         inventory[item].count+=1;
         inventory[item].MakePopup();

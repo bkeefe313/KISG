@@ -8,7 +8,7 @@ public class ItemRunnable
     protected Item item;
     protected int count;
 
-    public virtual void Init(ref int c)
+    public virtual void Init(Item i)
     {
         // This method will be overridden by the child classes
     }

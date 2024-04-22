@@ -24,6 +24,9 @@ public class EnemyManager : MonoBehaviour
     public float gravity;
     public bool grounded = false;
 
+    // OTHER
+    private bool knockedBackPlayer = false;
+
     void Start()
     {
         player = GameObject.Find("Player").GetComponent<PlayerManager>();
@@ -33,7 +36,10 @@ public class EnemyManager : MonoBehaviour
     public virtual void FixedUpdate()
     {
         CheckAttacks();
-        CollideWithPlayer();
+        bool col = CollideWithPlayer();
+
+        if(!col)
+            knockedBackPlayer = false;
 
         if (health <= 0)
         {
@@ -77,13 +83,19 @@ public class EnemyManager : MonoBehaviour
     }
 
     //knockback player if collide with enemy.
-    void CollideWithPlayer(){
+    bool CollideWithPlayer(){
         BoxCollider playerCollider = player.playerCollider;
         BoxCollider enemyCollider = GetComponent<BoxCollider>();
         if(playerCollider.bounds.Intersects(enemyCollider.bounds)) {
-            Vector3 KnockBackDir = player.transform.position - transform.position;
-            KnockBackDir.Normalize();
-            player.Velocity += KnockBackDir * KnockbackStrength;
+            if (!knockedBackPlayer)
+            {
+                Vector3 KnockBackDir = player.transform.position - transform.position;
+                KnockBackDir.Normalize();
+                player.Velocity += KnockBackDir * KnockbackStrength;
+                knockedBackPlayer = true;
+            }
+            return true;
         }
+        return false;
     }
 }

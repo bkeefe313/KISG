@@ -5,18 +5,18 @@ using UnityEngine;
 public class GreenCreature : ItemRunnable
 {
     private PlayerManager player;
-    override public void Init(ref int c)
+    override public void Init(Item i)
     {
-        count = c;
         player = GameObject.Find("Player").GetComponent<PlayerManager>();
+        item = i;
     }
 
     override public void Run()
     {
-        if(count > 0)
+        if(item.count > 0)
         {
             player.inventory.money = 0;
-            count = 0;
+            item.count = 0;
         }
     }
 }

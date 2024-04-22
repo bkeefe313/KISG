@@ -6,15 +6,15 @@ public class Printer : ItemRunnable
 {
     private PlayerManager player;
 
-    public override void Init(ref int c)
+    public override void Init(Item i)
     {
         player = GameObject.Find("Player").GetComponent<PlayerManager>();
-        count = c;
+        item = i;
     }
 
     public override void Run()
     {
-        if(count > 0)
+        if(item.count > 0)
         {
             foreach(Item i in player.inventory.inventory)
             {
@@ -23,7 +23,7 @@ public class Printer : ItemRunnable
                 if(i.count > 0)
                     i.count*=2;
             }
-            count = 0;
+            item.count = 0;
         }
     }
 }

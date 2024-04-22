@@ -14,7 +14,6 @@ public class PlayerManager : MonoBehaviour
     UIManager uimanager;
     public bool attacking = false;
     public GameObject AttackBox;
-    private float timeSinceLastAttack = 0;
     public GameObject weapon;
     public bool handbraking = false;
     float timeSinceFreeze = 0;
@@ -42,6 +41,7 @@ public class PlayerManager : MonoBehaviour
     public Terrain terrain;
     public float heightChange;
     public float currentHeight;
+    public ParticleSystem RocketBoostFX;
 
     // Start is called before the first frame update
     void Start()
@@ -51,9 +51,13 @@ public class PlayerManager : MonoBehaviour
         inventory = GetComponent<PlayerInventory>();
         playerCollider = GetComponent<BoxCollider>();
         playerRB = GetComponent<Rigidbody>();
+        RocketBoostFX = GetComponent<ParticleSystem>();
+
 
         baseStats = new Stats();
         realStats = new Stats();
+
+        UpdateStats();
 
         health = realStats.maxHealth;
     }
@@ -72,12 +76,43 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
+        PollInputs();
+        if(Time.timeScale == 0) 
+            return;
         Acceleration = Vector3.zero;
         Attack();
         Handbrake();
-        DoMovement();
+        PollMovement();
         Cheats();
         RunItems();
+        RespawnIfDead();
+        BoostFX();
+    }
+
+    void PollInputs() {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            uimanager.TogglePauseMenu();
+        }
+    }
+
+    void BoostFX() {
+        if (boosting) {
+            RocketBoostFX.Play();
+        } else {
+            RocketBoostFX.Stop();
+        }
+    }
+
+    void RespawnIfDead() {
+        if (health <= 0) {
+            health = realStats.maxHealth;
+            transform.position = new Vector3(0, 10, 0);
+        }
+        if (transform.position.y < -10) {
+            health = realStats.maxHealth;
+            transform.position = new Vector3(0, 10, 0);
+        }
     }
 
     void RunItems() {
@@ -96,68 +131,71 @@ public class PlayerManager : MonoBehaviour
     }
 
     void ApplyMovement() {
+        // apply acceleration
         Vector3 xzVelocity = new Vector3(Velocity.x, 0, Velocity.z);
         if (xzVelocity.magnitude > realStats.speed && !boosting)
             Velocity += Acceleration / Mathf.Pow((xzVelocity.magnitude / realStats.speed),2);
         else
             Velocity += Acceleration;
 
-        if(!handbraking) {
-            // rotate velocity vector with rotation
-            Vector3 xzVel = new Vector3(Velocity.x, 0, Velocity.z);
-            Vector3 xzRot = Quaternion.Euler(0, Rotation*Time.deltaTime, 0) * xzVel;
-            Velocity = new Vector3(xzRot.x, Velocity.y, xzRot.z);
-        }
+        // rotate velocity vector with rotation
+        Vector3 xzVel = new Vector3(Velocity.x, 0, Velocity.z);
+        Vector3 xzRot = Quaternion.Euler(0, Rotation*Time.deltaTime, 0) * xzVel;
+        Velocity = new Vector3(xzRot.x, Velocity.y, xzRot.z);
+
+        // Get incoming height change
         heightChange = terrain.SampleHeight(transform.position + Velocity * Time.deltaTime) - currentHeight;
         if(heightChange < 0)
             heightChange = 0;
+        
+        // scale velocity down based on height change
+        Velocity /= Mathf.Pow(heightChange/10 + 1, 2);
+
+        // move player
         transform.position += Velocity * Time.deltaTime + new Vector3(0, heightChange, 0);
 
         transform.Rotate(0, Rotation*(handbraking ? realStats.handbrakeMultiplier : 1)*Time.deltaTime, 0);
-        transform.Rotate(0, 0, heightChange*100);
     }
 
-    void DoMovement() {
+    void PollMovement() {
         Vector3 dir = transform.forward;
         Vector3 xzMovement = new Vector3(Velocity.x, 0, Velocity.z);
         currentHeight = terrain.SampleHeight(transform.position);
 
         // handbrake keeps direction of movement constant while turning
-        if (!handbraking || Velocity.magnitude < 0.1f) {
+        if (Velocity.magnitude < 0.1f) {
             hbForward = transform.forward;
         } else {
             // increment dir from transform.forward to hbForward
             dir = Vector3.RotateTowards(dir, hbForward, 0.01f, 0);
         }
 
-        if(Input.GetKey(KeyCode.W) && !handbraking)
+        if(Input.GetKey(KeyCode.W))
         {   
             if(Velocity.magnitude > 0.1f && Vector3.Dot(Velocity, -transform.forward) > 0)
                 Acceleration = transform.forward * realStats.speedMultiplier * 10;
             else
                 Acceleration = transform.forward * realStats.speedMultiplier;
-        } else if(Input.GetKey(KeyCode.S) && !handbraking)
+        } else if(Input.GetKey(KeyCode.S))
         {
             if(Velocity.magnitude > 0.1f && Vector3.Dot(Velocity, transform.forward) > 0)
-                Acceleration = -transform.forward * realStats.speedMultiplier * 10;
+                Acceleration = -transform.forward * realStats.speedMultiplier * Velocity.magnitude;
             else
                 Acceleration = -transform.forward * realStats.speedMultiplier;
         } else
         {
             if (Mathf.Abs(Velocity.magnitude) < realStats.speedMultiplier*2) {
                 Velocity = new Vector3(0, Velocity.y, 0);
-            } else if (!handbraking){
-                // "friction"
+            } else 
+            {
                 Acceleration = -xzMovement / 10f;
-            } else {
-                Acceleration = -xzMovement / (10f * realStats.handbrakeMultiplier);
             }
         }
 
         // slow rotation if moving quickly using magnitude of movement vector
-        int sign = Vector3.Dot(Velocity, dir) > 0 ? 1 : -1;
-        float rotFactor = sign * (Mathf.Abs(Velocity.magnitude) < 1 ? 0 : (1/Mathf.Sqrt(Mathf.Abs(Velocity.magnitude))));
-        rotFactor = rotFactor * (handbraking ? realStats.handbrakeMultiplier : 1);
+        int sign = Vector3.Dot(Velocity, dir) > 0 ? -1 : 1;
+        float rotFactor = sign * (Mathf.Abs(Velocity.magnitude) < 1f ? 2f : -(1/Mathf.Sqrt(Mathf.Abs(Velocity.magnitude))));
+        // rotFactor = rotFactor * (handbraking ? realStats.handbrakeMultiplier : 1);
         if(Input.GetKey(KeyCode.A))
         {
             Rotation = -RotationSpeed/10 * rotFactor;
@@ -211,25 +249,25 @@ public class PlayerManager : MonoBehaviour
     }
 
     void Attack() {
-        if (Input.GetMouseButtonDown(0) && timeSinceLastAttack > realStats.attackSpeed && !attacking)
+        if (Input.GetMouseButtonDown(0) && weapon.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("idlesword") && !attacking)
         {
-            timeSinceLastAttack = 0;
             // play animation
-            Debug.Log("Attacking"); 
             weapon.GetComponent<Animator>().SetBool("Attacking", true);
-            attacking = true;
         }
-        if (attacking && timeSinceLastAttack > 0.75f)
+        else if (weapon.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("idlesword"))
         {
             weapon.GetComponent<Animator>().SetBool("Attacking", false);
-            attacking = false;
         }
-        timeSinceLastAttack += Time.deltaTime;
 
         if(Time.timeScale != 1 && timeSinceFreeze < 0.05f) {
             timeSinceFreeze += Time.unscaledDeltaTime;
         } else if(Time.timeScale != 1) {
             Time.timeScale = 1;
+        }
+
+        if(attacking) {
+            // flash weapon while active
+            
         }
     }
 
@@ -242,7 +280,7 @@ public class PlayerManager : MonoBehaviour
         Time.timeScale = 0.05f;
         timeSinceFreeze = 0;
 
-        float damage = realStats.baseDamage * realStats.attackMultiplier * (Velocity.magnitude / realStats.speed);
+        float damage = realStats.baseDamage * realStats.attackMultiplier * (0.1f + (Velocity.magnitude / realStats.speed));
 
         // Damage Particle Effect
         GameObject fx = Instantiate(hitFX, weapon.transform.position, Quaternion.identity);
