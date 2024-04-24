@@ -102,7 +102,7 @@ public class RatManager : EnemyManager
 
     //enemy attack
     void Attack(){
-        BoxCollider enemyAttackBox = this.enemyCollider;
+        Collider enemyAttackBox = enemyCollider;
         BoxCollider playerCollider = player.playerCollider;
         if(playerCollider.bounds.Intersects(enemyAttackBox.bounds) && !player.invincible){
             player.TakeDamage(attackDmg);

@@ -8,11 +8,13 @@ using UnityEngine;
     public GameObject mediumChest;
     public GameObject commonChest;
     public GameObject Spire;
+    public GameObject Portal;
     public float heightLimit;
     public GameObject Terrain;
 
     void Start()
     {
+        Terrain = GameObject.Find("Terrain");
         // Get the terrain dimensions
         Terrain terrain = Terrain.GetComponent<Terrain>();
         float terrainWidth = terrain.terrainData.size.x * 0.75f;
@@ -42,10 +44,11 @@ using UnityEngine;
         }
 
         SpawnChests(spawnPoints);
-        SpawnSpire(terrainWidth, terrainLength, terrain);
+        SpawnObject(terrainWidth, terrainLength, terrain, Spire);
+        SpawnObject(terrainWidth, terrainLength, terrain, Portal, new Vector3(0, 5, 0));
     }
 
-    void SpawnSpire(float terrainWidth, float terrainLength, Terrain terrain)
+    void SpawnObject(float terrainWidth, float terrainLength, Terrain terrain, GameObject obj, Vector3 offset = new Vector3())
     {
         float x = 0f;
         float z = 0f;
@@ -57,7 +60,7 @@ using UnityEngine;
             y = terrain.SampleHeight(new Vector3(x, 0, z));
         }
 
-        Instantiate(Spire, new Vector3(x, y, z), Quaternion.identity);
+        Instantiate(obj, new Vector3(x, y, z) + offset, Quaternion.identity);
     }
 
     void SpawnChests(List<Vector3> spawnPoints)

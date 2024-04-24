@@ -7,6 +7,9 @@ public class UIManager : MonoBehaviour
     public PlayerManager playerManager;
     public PlayerInventory playerInventory;
     public bool paused = false;
+    public Sprite dmgFX;
+    public float damageFxLevel = 0.0f;
+    public float damageDuration = 1.0f;
 
     void Start()
     {
@@ -32,6 +35,16 @@ public class UIManager : MonoBehaviour
                 Application.Quit();
             }
         }
+        if(damageFxLevel > 0)
+        {
+            Debug.Log("Drawing damage fx");
+            damageFxLevel -= Time.deltaTime;
+            // change opacity based on damageFxLevel
+            Color color = GUI.color;
+            color.a = damageFxLevel / damageDuration;
+            GUI.color = color;
+            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), dmgFX.texture);
+        }
     }
     string inventoryString(List<Item> inventory)
     {
@@ -55,5 +68,9 @@ public class UIManager : MonoBehaviour
         paused = !paused;
         Time.timeScale = paused ? 0 : 1;
         Cursor.visible = paused;
+    }
+
+    public void ActivateDamageFX() {
+        damageFxLevel = damageDuration;
     }
 }

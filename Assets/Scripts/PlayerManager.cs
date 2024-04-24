@@ -2,9 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
+    // INSTANCE
+    static PlayerManager instance;
+
     // STATS
     public Stats baseStats;
     public Stats realStats;
@@ -43,8 +47,23 @@ public class PlayerManager : MonoBehaviour
     public float currentHeight;
     public ParticleSystem RocketBoostFX;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
+    {
+        // start of new code
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        // end of new code
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         uimanager = GameObject.Find("Game Manager").GetComponent<UIManager>();
         Controller = GetComponent<CharacterController>();
@@ -52,8 +71,17 @@ public class PlayerManager : MonoBehaviour
         playerCollider = GetComponent<BoxCollider>();
         playerRB = GetComponent<Rigidbody>();
         RocketBoostFX = GetComponent<ParticleSystem>();
+        terrain = GameObject.Find("Terrain").GetComponent<Terrain>();
 
+        if (scene.name == "Level2")
+        {
+            transform.position = new Vector3(200, 2, 200);
+        }
+    }
 
+    // Start is called before the first frame update
+    void Start()
+    {
         baseStats = new Stats();
         realStats = new Stats();
 
@@ -275,8 +303,9 @@ public class PlayerManager : MonoBehaviour
         inventory.money += type * 10;
         uimanager.UpdateMoney(inventory.money);
     }
+    
 
-    public float GetDamage() {
+    public float DoDamage() {
         Time.timeScale = 0.05f;
         timeSinceFreeze = 0;
 
@@ -312,5 +341,7 @@ public class PlayerManager : MonoBehaviour
 
     public void TakeDamage(float damage) {
         health -= damage / realStats.defenseMultiplier;
+        // screen effect
+        uimanager.ActivateDamageFX();
     }
 }

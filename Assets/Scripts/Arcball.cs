@@ -25,6 +25,9 @@ public class CameraMove : MonoBehaviour
         // hide cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        Player = GameObject.Find("Player").transform;
+        lookAt = GameObject.Find("Player").transform.GetChild(0).transform;
  
     }
  

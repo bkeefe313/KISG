@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class EnemyManager : MonoBehaviour
     public GameObject damagePopup;
     float invincibilityTimer = 0.5f;
     public int type = 0;
-    public BoxCollider enemyCollider;
+    public Collider enemyCollider;
     public float KnockbackStrength = 20f;
     public float attackDmg = 10;
     public float attackRate = 1;
@@ -31,6 +32,11 @@ public class EnemyManager : MonoBehaviour
     {
         player = GameObject.Find("Player").GetComponent<PlayerManager>();
         enemyCollider = GetComponent<BoxCollider>();
+        if(enemyCollider == null)
+            enemyCollider = GetComponent<SphereCollider>();
+        if(enemyCollider == null)
+            enemyCollider = GetComponent<MeshCollider>();
+        
     }
 
     public virtual void FixedUpdate()
@@ -51,18 +57,15 @@ public class EnemyManager : MonoBehaviour
         GameObject playerAttackBox = player.AttackBox;
         if(player.attacking) {
             // Get the player's attack box
-            BoxCollider playerCollider = playerAttackBox.GetComponent<BoxCollider>();
-
-            // Get the enemy's attack box
-            BoxCollider enemyCollider = GetComponent<BoxCollider>();
+            Collider atkCollider = playerAttackBox.GetComponent<BoxCollider>();
 
             // Check if the player's attack box is colliding with the enemy's attack box
-            if (playerCollider.bounds.Intersects(enemyCollider.bounds) && invincibilityTimer > 0.5f)
+            if (atkCollider.bounds.Intersects(enemyCollider.bounds) && invincibilityTimer > 0.5f)
             {
                 // If the player's attack box is colliding with the enemy's attack box, deal damage to the enemy
-                health -= player.GetDamage() / defenseMultiplier;
+                health -= player.DoDamage() / defenseMultiplier;
                 DamagePopup dmg = Instantiate(damagePopup, transform.position, Quaternion.identity).GetComponent<DamagePopup>();
-                dmg.SetDamage(player.GetDamage() / defenseMultiplier);
+                dmg.SetDamage(player.DoDamage() / defenseMultiplier);
 
                 invincibilityTimer = 0;
                 Knockback(player.realStats.knockback, -transform.forward);
@@ -85,7 +88,7 @@ public class EnemyManager : MonoBehaviour
     //knockback player if collide with enemy.
     bool CollideWithPlayer(){
         BoxCollider playerCollider = player.playerCollider;
-        BoxCollider enemyCollider = GetComponent<BoxCollider>();
+        Collider enemyCollider = GetComponent<Collider>();
         if(playerCollider.bounds.Intersects(enemyCollider.bounds)) {
             if (!knockedBackPlayer)
             {

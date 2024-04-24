@@ -15,6 +15,7 @@ public class EnemySpawner : MonoBehaviour
     void Start()
     {
         spawnTimer = spawnRate;
+        Terrain = GameObject.Find("Terrain");
     }
 
     void Update()
