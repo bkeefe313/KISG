@@ -9,9 +9,9 @@ public class lvl2trigger : MonoBehaviour
         Scene scene = SceneManager.GetActiveScene();
         if(other.tag == "Player") {
             if (scene.buildIndex == 1) {
-                SceneManager.LoadScene(0);
-            } else {
                 SceneManager.LoadScene(1);
+            } else {
+                SceneManager.LoadScene(2);
             }
         }
     }
