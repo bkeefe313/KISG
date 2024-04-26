@@ -4902,7 +4902,8 @@ MonoBehaviour:
   defenseMultiplier: 1
   damagePopup: {fileID: 8014674783101511761, guid: 730d6f21848b48248a858313287e2ce2, type: 3}
   type: 1
-  enemyCollider: {fileID: 0}
+  movementCollider: {fileID: 6283897983542558906}
+  hitboxCollider: {fileID: 6283897983542558906}
   KnockbackStrength: 15
   attackDmg: 10
   attackRate: 1
@@ -4972,6 +4973,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7635826562936255635, guid: 5044fbb8454d5d147846bec587435270, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: -7635826562936255635, guid: 5044fbb8454d5d147846bec587435270, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 592c3bdd9148040cb9dc1f7461f549e5, type: 2}
+    - target: {fileID: -7635826562936255635, guid: 5044fbb8454d5d147846bec587435270, type: 3}
+      propertyPath: m_Materials.Array.data[3]
+      value: 
+      objectReference: {fileID: -6629797300637803691, guid: 5044fbb8454d5d147846bec587435270, type: 3}
+    - target: {fileID: -7635826562936255635, guid: 5044fbb8454d5d147846bec587435270, type: 3}
+      propertyPath: m_Materials.Array.data[4]
+      value: 
+      objectReference: {fileID: -6922793697723135513, guid: 5044fbb8454d5d147846bec587435270, type: 3}
+    - target: {fileID: -6400281290468069383, guid: 5044fbb8454d5d147846bec587435270, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -2432090755550338912, guid: 8daeb9e780c524e17b2e2cbc8f4350ab, type: 3}
     - target: {fileID: 919132149155446097, guid: 5044fbb8454d5d147846bec587435270, type: 3}
       propertyPath: m_Name
       value: rat

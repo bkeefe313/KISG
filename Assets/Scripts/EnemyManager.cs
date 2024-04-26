@@ -12,7 +12,8 @@ public class EnemyManager : MonoBehaviour
     public GameObject damagePopup;
     float invincibilityTimer = 0.5f;
     public int type = 0;
-    public Collider enemyCollider;
+    public Collider movementCollider;
+    public Collider hitboxCollider;
     public float KnockbackStrength = 20f;
     public float attackDmg = 10;
     public float attackRate = 1;
@@ -31,11 +32,6 @@ public class EnemyManager : MonoBehaviour
     void Start()
     {
         player = GameObject.Find("Player").GetComponent<PlayerManager>();
-        enemyCollider = GetComponent<BoxCollider>();
-        if(enemyCollider == null)
-            enemyCollider = GetComponent<SphereCollider>();
-        if(enemyCollider == null)
-            enemyCollider = GetComponent<MeshCollider>();
         
     }
 
@@ -60,7 +56,7 @@ public class EnemyManager : MonoBehaviour
             Collider atkCollider = playerAttackBox.GetComponent<BoxCollider>();
 
             // Check if the player's attack box is colliding with the enemy's attack box
-            if (atkCollider.bounds.Intersects(enemyCollider.bounds) && invincibilityTimer > 0.5f)
+            if (atkCollider.bounds.Intersects(hitboxCollider.bounds) && invincibilityTimer > 0.5f)
             {
                 // If the player's attack box is colliding with the enemy's attack box, deal damage to the enemy
                 health -= player.DoDamage() / defenseMultiplier;
@@ -88,8 +84,7 @@ public class EnemyManager : MonoBehaviour
     //knockback player if collide with enemy.
     bool CollideWithPlayer(){
         BoxCollider playerCollider = player.playerCollider;
-        Collider enemyCollider = GetComponent<Collider>();
-        if(playerCollider.bounds.Intersects(enemyCollider.bounds)) {
+        if(playerCollider.bounds.Intersects(movementCollider.bounds)) {
             if (!knockedBackPlayer)
             {
                 Vector3 KnockBackDir = player.transform.position - transform.position;
