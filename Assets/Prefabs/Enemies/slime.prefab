@@ -4923,6 +4923,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5623683898228871743}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5453453294562437387}
   m_SourcePrefab: {fileID: 100100000, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
 --- !u!4 &8559231781077563435 stripped
 Transform:
@@ -4950,7 +4953,8 @@ MonoBehaviour:
   defenseMultiplier: 1
   damagePopup: {fileID: 8014674783101511761, guid: 730d6f21848b48248a858313287e2ce2, type: 3}
   type: 2
-  enemyCollider: {fileID: 0}
+  movementCollider: {fileID: 5623683898228871743}
+  hitboxCollider: {fileID: 5453453294562437387}
   KnockbackStrength: 30
   attackDmg: 10
   attackRate: 1
@@ -4985,3 +4989,24 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: 7d9edf9679691434da35b812c4ff3adb, type: 3}
+--- !u!65 &5453453294562437387
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9044265270791430801}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5.943116, y: 3.5320547, z: 6.0044804}
+  m_Center: {x: 0.07129049, y: 1.1441392, z: 0.06338787}

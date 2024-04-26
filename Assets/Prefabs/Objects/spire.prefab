@@ -4949,6 +4949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e854fd324d81c4b98a7328cb8e6f1da1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boss: {fileID: 7818912671991702000, guid: f7d97ee1dc079184dab1506ab9d161f5, type: 3}
+  boss1: {fileID: 8702929255102025603, guid: a1861ace86928403db2403591c41a203, type: 3}
+  boss2: {fileID: 8702929255102025603, guid: a1861ace86928403db2403591c41a203, type: 3}
   player: {fileID: 0}
   destroy: 0

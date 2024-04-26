@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RatManager : EnemyManager
+public class RatKingManager : EnemyManager
 {
 
     // Update is called once per frame
@@ -12,31 +12,10 @@ public class RatManager : EnemyManager
         Acceleration = Vector3.zero;
         Attack();
 
-        if (CanSeePlayer())
-            MoveTowardsPlayer();
-        else
-            Velocity = Vector3.zero;
+        MoveTowardsPlayer();
 
         DoGravity();
         DoMovement();
-    }
-
-    bool CanSeePlayer() 
-    {
-        Vector3 playerPosition = player.transform.position;
-
-        // Enemies are on layer 6 (ignore)
-        int layerMask = 1 << 6;
-        layerMask = ~layerMask;
-
-        RaycastHit hit;
-        Physics.Raycast(transform.position, playerPosition - transform.position, out hit, Mathf.Infinity, layerMask);
-
-        if (hit.collider != null && hit.collider.gameObject.tag == "Player")
-        {
-            return true;
-        }
-        return false;
     }
 
     void MoveTowardsPlayer()
@@ -54,19 +33,13 @@ public class RatManager : EnemyManager
         Vector3 direction = playerPosition - enemyPosition;
 
         // Get the rotation from the enemy to the player
-        Quaternion rotation = Quaternion.LookRotation(direction);
+        Quaternion rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), 10.0f*Time.deltaTime);
 
         // Set the enemy's rotation to the rotation from the enemy to the player, but only rotate around the y-axis
         transform.rotation = Quaternion.Euler(0, rotation.eulerAngles.y, 0);
 
-        // Move the enemy towards the player
-        if (Velocity.normalized != direction.normalized) {
-            Velocity -= Velocity.normalized * Speed;
-            Velocity += direction.normalized * Speed;
-        }
-
-        if(Velocity.magnitude < Speed)
-            Velocity += direction.normalized * Speed;
+        if(Vector3.Dot(Velocity, transform.forward) < Speed && Vector3.Dot(transform.forward, direction) > 0.5f)
+            Velocity += transform.forward.normalized * Speed;
         
     }
 
@@ -102,11 +75,12 @@ public class RatManager : EnemyManager
 
     //enemy attack
     void Attack(){
-        Collider enemyAttackBox = movementCollider;
-        BoxCollider playerCollider = player.playerCollider;
-        if(playerCollider.bounds.Intersects(enemyAttackBox.bounds) && !player.invincible){
-            player.TakeDamage(attackDmg);
-            player.invincible = true;
-        }
+        // Collider enemyAttackBox = enemyCollider;
+        // BoxCollider playerCollider = player.playerCollider;
+        // if(playerCollider.bounds.Intersects(enemyAttackBox.bounds) && !player.invincible){
+        //     player.TakeDamage(attackDmg);
+        //     player.invincible = true;
+        // }
     }
+
 }

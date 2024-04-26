@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BossSpawner : MonoBehaviour
 {
-    public GameObject boss;
+    public GameObject boss1;
+    public GameObject boss2;
     public GameObject player;
     private Renderer rend;
     public bool destroy = false;
@@ -26,7 +28,7 @@ public class BossSpawner : MonoBehaviour
             if(Input.GetKeyDown(KeyCode.E))
             {
                 // spawn the boss
-                Instantiate(boss, transform.position, Quaternion.identity);
+                SpawnBoss();
                 // destroy the spawner
                 destroy = true;
             }
@@ -42,6 +44,13 @@ public class BossSpawner : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+    }
+
+    void SpawnBoss() {
+        if(SceneManager.GetActiveScene().name == "Level1")
+            Instantiate(boss1, transform.position, Quaternion.identity);
+        else if(SceneManager.GetActiveScene().name == "Level2")
+            Instantiate(boss2, transform.position, Quaternion.identity);
     }
 
 }
