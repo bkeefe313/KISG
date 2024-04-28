@@ -9,14 +9,18 @@ public class DamagePopup : MonoBehaviour
     Text text;
     int damage;
     float timer = 0;
+    public Font font;
 
     void Start() {
-        GetComponent<Canvas>().worldCamera = Camera.main;
+        Canvas canvas = GetComponent<Canvas>();
+        canvas.worldCamera = Camera.main;
+        canvas.sortingLayerName = "UI";
         text = GetComponent<Text>();
     }
     void Update() {
+        text.font = font;
         text.color = new Color(Mathf.Sin(Mathf.PI * (damage / 100)), 1, Mathf.Cos(Mathf.PI * (damage / 100)), 1);
-        text.fontSize = 20;
+        text.fontSize = 100;
         text.text = damage.ToString();
 
         transform.rotation = Quaternion.LookRotation(transform.position - Camera.main.transform.position);

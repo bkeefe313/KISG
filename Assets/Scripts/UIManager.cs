@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,11 +11,22 @@ public class UIManager : MonoBehaviour
     public Sprite dmgFX;
     public float damageFxLevel = 0.0f;
     public float damageDuration = 1.0f;
+    public bool bossActive = false;
+    public EnemyManager currentBoss;
+    public Image hpBarBackground; // Add your background image here(inside Unity)
+    public Image hpBarForeground; // add the HP image that will be affected by Damage here
+    public Canvas canvas;
+    public GameObject portal;
 
     void Start()
     {
+        canvas = GameObject.Find("hpCanvas").GetComponent<Canvas>();
         playerManager = GameObject.Find("Player").GetComponent<PlayerManager>();
         playerInventory = GameObject.Find("Player").GetComponent<PlayerInventory>();
+        hpBarBackground = canvas.gameObject.transform.GetChild(0).GetComponent<Image>();
+        hpBarForeground = canvas.gameObject.transform.GetChild(1).GetComponent<Image>();
+        hpBarBackground.enabled = false;
+        hpBarForeground.enabled = false;
     }
     void OnGUI()
     {
@@ -45,6 +57,24 @@ public class UIManager : MonoBehaviour
             GUI.color = color;
             GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), dmgFX.texture);
         }
+        if(bossActive)
+        {
+            hpBarBackground.enabled = true;
+            hpBarForeground.enabled = true;
+            hpBarForeground.fillAmount = currentBoss.health / currentBoss.maxHealth;
+        } else {
+            hpBarBackground.enabled = false;
+            hpBarForeground.enabled = false;
+        }
+    }
+
+    void Update()
+    {
+        if(bossActive) {
+            gameObject.GetComponent<AudioSource>().mute = true;
+        } else {
+            gameObject.GetComponent<AudioSource>().mute = false;
+        }
     }
     string inventoryString(List<Item> inventory)
     {
@@ -72,5 +102,18 @@ public class UIManager : MonoBehaviour
 
     public void ActivateDamageFX() {
         damageFxLevel = damageDuration;
+    }
+
+    public void ActivateBoss(EnemyManager boss) {
+        bossActive = true;
+        currentBoss = boss;
+    }
+
+    public void BossDefeated() {
+        // spawn portal
+        Instantiate(portal, currentBoss.transform.position, Quaternion.identity);
+
+        bossActive = false;
+        currentBoss = null;
     }
 }

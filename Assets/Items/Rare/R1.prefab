@@ -72,7 +72,7 @@ MonoBehaviour:
   baseDamage: 0
   attackMultiplier: 0
   defenseMultiplier: 0
-  attackSpeed: 2
+  attackSpeed: 0.5
   gravity: 0
   money: 0
   handbrakeMultiplier: 0

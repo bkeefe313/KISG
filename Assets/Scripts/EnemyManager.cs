@@ -7,7 +7,9 @@ using UnityEngine.UIElements;
 public class EnemyManager : MonoBehaviour
 {
     protected PlayerManager player;
+    public string enemyName;
     public float health = 100;
+    public float maxHealth = 100;
     public float defenseMultiplier = 1;
     public GameObject damagePopup;
     float invincibilityTimer = 0.5f;
@@ -28,10 +30,13 @@ public class EnemyManager : MonoBehaviour
 
     // OTHER
     private bool knockedBackPlayer = false;
+    protected Terrain terrain;
+    protected float currentHeight;
 
     void Start()
     {
         player = GameObject.Find("Player").GetComponent<PlayerManager>();
+        terrain = GameObject.Find("Terrain").GetComponent<Terrain>();
         
     }
 
@@ -76,7 +81,7 @@ public class EnemyManager : MonoBehaviour
         Velocity += direction * knockback;
     }
 
-    void DestroyEnemy() {
+    protected virtual void DestroyEnemy() {
         player.KilledEnemy(type);
         Destroy(gameObject);
     }
@@ -95,5 +100,24 @@ public class EnemyManager : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    protected void DoGravity() {
+        if (!grounded)
+            Velocity.y += gravity * Time.deltaTime;
+
+        int layerMask = 1 << 6;
+        layerMask = ~layerMask;
+
+        // RaycastHit hit;
+        // Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, layerMask);
+        // grounded = hit.distance < 0.5f;
+        // Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * hit.distance, Color.red);
+
+        currentHeight = terrain.SampleHeight(transform.position);
+        float diff = transform.position.y - currentHeight;
+        grounded = diff < 0.1f;
+        if (diff < 0)
+            transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);
     }
 }

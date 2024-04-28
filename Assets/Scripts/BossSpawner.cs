@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class BossSpawner : MonoBehaviour
 {
@@ -10,11 +11,13 @@ public class BossSpawner : MonoBehaviour
     public GameObject player;
     private Renderer rend;
     public bool destroy = false;
+    public UIManager uiManager;
 
     void Start() 
     {
         player = GameObject.Find("Player");
         rend = GetComponentInChildren<Renderer>();
+        uiManager = GameObject.Find("Game Manager").GetComponent<UIManager>();
     }
 
     // Update is called once per frame
@@ -47,10 +50,15 @@ public class BossSpawner : MonoBehaviour
     }
 
     void SpawnBoss() {
-        if(SceneManager.GetActiveScene().name == "Level1")
-            Instantiate(boss1, transform.position, Quaternion.identity);
+        if(SceneManager.GetActiveScene().name == "Level1") {
+            GameObject boss = Instantiate(boss1, transform.position, Quaternion.identity);
+            uiManager.ActivateBoss(boss.GetComponent<EnemyManager>());
+        }
         else if(SceneManager.GetActiveScene().name == "Level2")
-            Instantiate(boss2, transform.position, Quaternion.identity);
+        {
+            GameObject boss = Instantiate(boss2, transform.position + new Vector3(400, 0, -400), Quaternion.identity);
+            uiManager.ActivateBoss(boss.GetComponent<EnemyManager>());
+        }
     }
 
 }

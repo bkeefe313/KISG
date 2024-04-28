@@ -34,7 +34,6 @@ public class CameraMove : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
- 
         currentX += Input.GetAxis("Mouse X") * sensivity * Time.deltaTime;
         currentY -= Input.GetAxis("Mouse Y") * sensivity * Time.deltaTime;
  
@@ -44,10 +43,16 @@ public class CameraMove : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(0, currentX, 0);
         rotation = rotation * Quaternion.Euler(currentY, Player.eulerAngles.y, 0);
         transform.position = lookAt.position + rotation * Direction;
+        distance += Input.GetAxis("Mouse ScrollWheel") * 2;
+        if (distance < 2)
+        {
+            distance = 2;
+        }
+        if (distance > 80)
+        {
+            distance = 80;
+        }
  
         transform.LookAt(lookAt.position);
- 
-     
- 
     }
 }

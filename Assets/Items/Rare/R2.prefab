@@ -48,7 +48,7 @@ MonoBehaviour:
   itemname: Party Balloon
   rarity: 1
   id: 102
-  count: 0
+  count: 1
   Popup: {fileID: 433947054933733324, guid: 47e376187fd104c1ebacdf0f1779fffd, type: 3}
   model: {fileID: 0}
   effects: {fileID: -4391485045671917938}
@@ -68,7 +68,7 @@ MonoBehaviour:
   health: 0
   speed: 0
   speedMultiplier: 0
-  jumpForce: 1
+  jumpForce: 2
   baseDamage: 0
   attackMultiplier: 0
   defenseMultiplier: 0

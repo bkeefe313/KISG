@@ -14,7 +14,7 @@ public class PlayerAttack : StateMachineBehaviour
     {
         PlayerManager player = animator.gameObject.transform.parent.transform.parent.gameObject.GetComponent<PlayerManager>();
        // activate hitbox for a small portion halfway thru animation
-        player.attacking = stateInfo.normalizedTime >= 0.4 && stateInfo.normalizedTime <= 0.6;
+        player.attacking = stateInfo.normalizedTime >= 0.25 && stateInfo.normalizedTime <= 0.75;
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

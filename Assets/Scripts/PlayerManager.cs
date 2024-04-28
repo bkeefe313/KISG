@@ -66,6 +66,7 @@ public class PlayerManager : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         uimanager = GameObject.Find("Game Manager").GetComponent<UIManager>();
+        uimanager.playerManager = this;
         Controller = GetComponent<CharacterController>();
         inventory = GetComponent<PlayerInventory>();
         playerCollider = GetComponent<BoxCollider>();
@@ -156,13 +157,15 @@ public class PlayerManager : MonoBehaviour
             inventory.GetRareItem();
         if(Input.GetKeyDown(KeyCode.Alpha3))
             inventory.GetLegendaryItem();
+        if(Input.GetKeyDown(KeyCode.Alpha4))
+            SceneManager.LoadScene("Level2");
     }
 
     void ApplyMovement() {
         // apply acceleration
         Vector3 xzVelocity = new Vector3(Velocity.x, 0, Velocity.z);
         if (xzVelocity.magnitude > realStats.speed && !boosting)
-            Velocity += Acceleration / Mathf.Pow((xzVelocity.magnitude / realStats.speed),2);
+            Velocity += Acceleration / Mathf.Pow(xzVelocity.magnitude / realStats.speed,2);
         else
             Velocity += Acceleration;
 
@@ -220,10 +223,7 @@ public class PlayerManager : MonoBehaviour
             }
         }
 
-        // slow rotation if moving quickly using magnitude of movement vector
-        int sign = Vector3.Dot(Velocity, dir) > 0 ? -1 : 1;
-        float rotFactor = sign * (Mathf.Abs(Velocity.magnitude) < 1f ? 2f : -(1/Mathf.Sqrt(Mathf.Abs(Velocity.magnitude))));
-        // rotFactor = rotFactor * (handbraking ? realStats.handbrakeMultiplier : 1);
+        float rotFactor = 1f / (1f + (Mathf.Pow(Velocity.magnitude, 0.1f)));
         if(Input.GetKey(KeyCode.A))
         {
             Rotation = -RotationSpeed/10 * rotFactor;
@@ -292,11 +292,6 @@ public class PlayerManager : MonoBehaviour
         } else if(Time.timeScale != 1) {
             Time.timeScale = 1;
         }
-
-        if(attacking) {
-            // flash weapon while active
-            
-        }
     }
 
     public void KilledEnemy(int type) {
@@ -333,8 +328,8 @@ public class PlayerManager : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider other) {
-        Debug.Log("Triggered");
-        if (other.gameObject.tag == "Projectile") {
+        
+        if (other.gameObject.tag == "Projectile" && !invincible) {
             other.gameObject.GetComponent<SlimeProjectile>().Destroy(this);
         }
     }

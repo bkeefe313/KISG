@@ -4950,6 +4950,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boss1: {fileID: 8702929255102025603, guid: a1861ace86928403db2403591c41a203, type: 3}
-  boss2: {fileID: 8702929255102025603, guid: a1861ace86928403db2403591c41a203, type: 3}
+  boss2: {fileID: 4355446260383422022, guid: 38aacdc75f1534cb585431c9bef96551, type: 3}
   player: {fileID: 0}
   destroy: 0
+  uiManager: {fileID: 0}

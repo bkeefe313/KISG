@@ -75,5 +75,5 @@ MonoBehaviour:
   attackSpeed: 0
   gravity: 0
   money: 0
-  handbrakeMultiplier: 1
+  handbrakeMultiplier: 0.5
   knockback: 0

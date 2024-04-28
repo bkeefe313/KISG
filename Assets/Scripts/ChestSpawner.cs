@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [System.Serializable] public class ChestSpawner : MonoBehaviour
 {
@@ -44,8 +45,8 @@ using UnityEngine;
         }
 
         SpawnChests(spawnPoints);
-        SpawnObject(terrainWidth, terrainLength, terrain, Spire);
-        SpawnObject(terrainWidth, terrainLength, terrain, Portal, new Vector3(0, 5, 0));
+        if (SceneManager.GetActiveScene().name == "Level1")
+            SpawnObject(terrainWidth, terrainLength, terrain, Spire);
     }
 
     void SpawnObject(float terrainWidth, float terrainLength, Terrain terrain, GameObject obj, Vector3 offset = new Vector3())

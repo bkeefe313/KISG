@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "KISG.sln"
+    "dotnet.defaultSolution": "The Knight in Shining Garbage.sln"
 }

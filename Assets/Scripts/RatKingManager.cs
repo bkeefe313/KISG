@@ -5,6 +5,11 @@ using UnityEngine;
 public class RatKingManager : EnemyManager
 {
 
+    public GameObject ratMinion;
+    public float minionTimer = 0f;
+    public float minionSpawnTime = 5f;
+    float totalTimeAlive = 0f;
+
     // Update is called once per frame
     public override void FixedUpdate()
     {
@@ -16,6 +21,20 @@ public class RatKingManager : EnemyManager
 
         DoGravity();
         DoMovement();
+
+        minionTimer += Time.deltaTime;
+
+        if (minionTimer >= minionSpawnTime) {
+            SpawnRatMinion();
+            minionTimer = 0f;
+        }
+
+        totalTimeAlive += Time.deltaTime;
+        minionSpawnTime = 5f - totalTimeAlive/60f;
+    }
+
+    void SpawnRatMinion() {
+        GameObject rat = Instantiate(ratMinion, transform.position, Quaternion.identity);
     }
 
     void MoveTowardsPlayer()
@@ -33,7 +52,7 @@ public class RatKingManager : EnemyManager
         Vector3 direction = playerPosition - enemyPosition;
 
         // Get the rotation from the enemy to the player
-        Quaternion rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), 10.0f*Time.deltaTime);
+        Quaternion rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), 20.0f*Time.deltaTime);
 
         // Set the enemy's rotation to the rotation from the enemy to the player, but only rotate around the y-axis
         transform.rotation = Quaternion.Euler(0, rotation.eulerAngles.y, 0);
@@ -60,17 +79,14 @@ public class RatKingManager : EnemyManager
         transform.position += Velocity * Time.deltaTime;
     }
 
-    void DoGravity() {
-        if (!grounded)
-            Velocity.y += gravity * Time.deltaTime;
-
-        int layerMask = 1 << 6;
-        layerMask = ~layerMask;
-
-        RaycastHit hit;
-        Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, layerMask);
-        grounded = hit.distance < 0.5f;
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * hit.distance, Color.red);
+    protected override void DestroyEnemy()
+    {
+        // get ui manager
+        UIManager ui = GameObject.Find("Game Manager").GetComponent<UIManager>();
+        // call the boss defeated function
+        ui.BossDefeated();
+        
+        base.DestroyEnemy();
     }
 
     //enemy attack

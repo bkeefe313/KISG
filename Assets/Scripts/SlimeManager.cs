@@ -115,17 +115,4 @@ public class SlimeManager : EnemyManager
         // Apply movement
         transform.position += Velocity * Time.deltaTime;
     }
-
-    void DoGravity() {
-        if (!grounded)
-            Velocity.y += gravity * Time.deltaTime;
-
-        int layerMask = 1 << 6;
-        layerMask = ~layerMask;
-
-        RaycastHit hit;
-        Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, layerMask);
-        grounded = hit.distance < 0.5f;
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.down) * hit.distance, Color.red);
-    }
 }
